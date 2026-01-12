@@ -1,4 +1,4 @@
-import type { IMovie } from "../types/movies";
+import type { IMovie } from "../types/movie";
 import { MovieCard } from "./MovieCard";
 
 export const MovieList = ({ movieList }: { movieList: IMovie[] }) => {

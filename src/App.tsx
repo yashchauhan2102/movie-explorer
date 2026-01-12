@@ -1,6 +1,6 @@
 import "./App.css";
 import { MovieList } from "./components/MovieList";
-import { SearchBar } from "./components/Searchbar";
+import { SearchBar } from "./components/SearchBar";
 import { movieList } from "./data/movies";
 
 function App() {
