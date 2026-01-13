@@ -1,18 +1,28 @@
 import { useState } from "react";
 import "./App.css";
 import { MovieList } from "./components/MovieList";
-import { SearchBar } from "./components/SearchBar";
+import { FilterBar } from "./components/FilterBar";
 import { movieList } from "./data/movies";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const filteredMovies = movieList.filter((movie) =>
-    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [selectedGenre, setSelectedGenre] = useState<string>("all");
+  const filteredMovies = movieList
+    .filter((movie) =>
+      movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((movie) =>
+      selectedGenre === "all" ? true : movie.genre === selectedGenre
+    );
 
   return (
     <div className="app_container">
-      <SearchBar value={searchTerm} onChange={setSearchTerm} />
+      <FilterBar
+        searchTerm={searchTerm}
+        onSearch={setSearchTerm}
+        selectedGenre={selectedGenre}
+        onGenreSelect={setSelectedGenre}
+      />
       <MovieList movieList={filteredMovies} />
     </div>
   );
