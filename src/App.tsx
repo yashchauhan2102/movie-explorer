@@ -7,7 +7,7 @@ import { filterMovies } from "./utils/filterMovies";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedGenre, setSelectedGenre] = useState<string>("all");
+  const [selectedGenre, setSelectedGenre] = useState<string>("All");
   const filteredMovies = useMemo(
     () => filterMovies(movieList, searchTerm, selectedGenre),
     [movieList, searchTerm, selectedGenre]

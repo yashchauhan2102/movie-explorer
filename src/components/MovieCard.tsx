@@ -1,6 +1,10 @@
 import type { IMovie } from "../types/movie";
 
-export const MovieCard = ({ movie }: { movie: IMovie }) => {
+interface IMovieCardProps {
+  movie: IMovie;
+}
+
+export const MovieCard = ({ movie }: IMovieCardProps) => {
   const { title, year, genre, rating } = movie;
   return (
     <div style={{ border: "1px solid #444", padding: "12px" }}>

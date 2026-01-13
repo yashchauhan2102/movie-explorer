@@ -1,14 +1,18 @@
+import { GENRES } from "../constants/genres";
+
+interface IFilterBarProps {
+  searchTerm: string;
+  onSearch: (value: string) => void;
+  selectedGenre: string;
+  onGenreSelect: (genre: string) => void;
+}
+
 export const FilterBar = ({
   searchTerm,
   onSearch,
   selectedGenre,
   onGenreSelect,
-}: {
-  searchTerm: string;
-  onSearch: (e: string) => void;
-  selectedGenre: string;
-  onGenreSelect: (e: string) => void;
-}) => {
+}: IFilterBarProps) => {
   return (
     <div style={{ paddingBottom: "50px", display: "flex", gap: "25px" }}>
       <input
@@ -22,10 +26,11 @@ export const FilterBar = ({
         value={selectedGenre}
         onChange={(e) => onGenreSelect(e.target.value)}
       >
-        <option value="all">All</option>
-        <option value="Action">Action</option>
-        <option value="Drama">Drama</option>
-        <option value="Sci-Fi">Sci-Fi</option>
+        {GENRES.map((genre) => (
+          <option value={genre} key={genre}>
+            {genre}
+          </option>
+        ))}
       </select>
     </div>
   );

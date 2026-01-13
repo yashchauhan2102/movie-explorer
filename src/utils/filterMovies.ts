@@ -10,5 +10,5 @@ export const filterMovies = (
       movie.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .filter((movie) =>
-      selectedGenre === "all" ? true : movie.genre === selectedGenre
+      selectedGenre === "All" ? true : movie.genre === selectedGenre
     );
