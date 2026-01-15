@@ -1,14 +1,19 @@
 import type { IMovie } from "../types/movie";
 
-export const filterMovies = (
-  movieList: IMovie[],
+export function filterMovies(
+  movies: IMovie[],
   searchTerm: string,
   selectedType: string
-): IMovie[] =>
-  movieList
-    ?.filter((movie) =>
-      movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    ?.filter((movie) =>
-      selectedType === "all" ? true : movie.type === selectedType
-    );
+): IMovie[] {
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+
+  return movies.filter((movie) => {
+    const matchesSearch =
+      normalizedSearch.length === 0 ||
+      movie.title.toLowerCase().includes(normalizedSearch);
+
+    const matchesType = selectedType === "all" || movie.type === selectedType;
+
+    return matchesSearch && matchesType;
+  });
+}
