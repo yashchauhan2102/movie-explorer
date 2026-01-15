@@ -4,10 +4,8 @@ import { MovieList } from "./components/MovieList";
 import { FilterBar } from "./components/FilterBar";
 import { filterMovies } from "./utils/filterMovies";
 import type { IMovie } from "./types/movie";
-import { MOVIE_URL } from "./constants/urls";
-import { mapOmdbMovieToMovie } from "./utils/mapOmdbMovies";
-import type { IOmdbSearchResponse } from "./types/omdb";
 import { useDebounce } from "./hooks/useDebounce";
+import { fetchMoviesBySearchTerm } from "./services/movieService";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -50,30 +48,16 @@ function App() {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch(
-          MOVIE_URL.replace("${SEARCH_TERM}", trimmed),
-          { signal: controller.signal }
+        const result = await fetchMoviesBySearchTerm(
+          trimmed,
+          controller.signal
         );
 
-        const data: IOmdbSearchResponse = await response.json();
-
-        if (data.Response === "False") {
-          console.log("Error: ", data.Error);
-          if (
-            data.Error === "Too many results." ||
-            data.Error === "Movie not found!"
-          ) {
-            setMovies([]);
-            setError(null);
-            return;
-          }
-
-          throw new Error(data.Error);
-        }
-
-        setMovies(data.Search.map(mapOmdbMovieToMovie));
+        setMovies(result);
       } catch (err) {
-        setError((err as Error).message);
+        if ((err as Error).name !== "AbortError") {
+          setError((err as Error).message);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -83,27 +67,28 @@ function App() {
     return () => controller.abort();
   }, [debouncedSearchTerm]);
 
-  if (isLoading) {
-    return <p>Loading Movies...</p>;
-  }
-
-  if (error) {
-    return (
-      <>
-        <p>Error while fetching movies !! Please try again Later</p>
-        <p>Error: {error}</p>
-      </>
-    );
-  }
   return (
     <div className="app_container">
-      <FilterBar
-        searchTerm={searchTerm}
-        onSearch={setSearchTerm}
-        selectedType={selectedType}
-        onTypeSelect={setSelectedType}
-      />
-      <MovieList movieList={filteredMovies} />
+      <div className="app_content ">
+        <FilterBar
+          searchTerm={searchTerm}
+          onSearch={setSearchTerm}
+          selectedType={selectedType}
+          onTypeSelect={setSelectedType}
+        />
+        <div className="movie_content">
+          {isLoading && <p>Loading movies...</p>}
+
+          {!isLoading && error && (
+            <>
+              <p>Error while fetching movies</p>
+              <p>Error: {error}</p>
+            </>
+          )}
+
+          {!isLoading && !error && <MovieList movieList={filteredMovies} />}
+        </div>
+      </div>
     </div>
   );
 }
