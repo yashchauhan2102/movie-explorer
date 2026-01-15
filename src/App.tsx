@@ -7,6 +7,7 @@ import type { IMovie } from "./types/movie";
 import { MOVIE_URL } from "./constants/urls";
 import { mapOmdbMovieToMovie } from "./utils/mapOmdbMovies";
 import type { IOmdbSearchResponse } from "./types/omdb";
+import { useDebounce } from "./hooks/useDebounce";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -20,8 +21,10 @@ function App() {
     [movies, searchTerm, selectedType]
   );
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 400);
+
   useEffect(() => {
-    const trimmed = searchTerm.trim();
+    const trimmed = debouncedSearchTerm.trim();
 
     // 🔑 RESET STATE when input is cleared
     if (trimmed.length === 0) {
@@ -48,7 +51,7 @@ function App() {
         setError(null);
 
         const response = await fetch(
-          MOVIE_URL.replace("${SEARCH_TERM}", searchTerm),
+          MOVIE_URL.replace("${SEARCH_TERM}", trimmed),
           { signal: controller.signal }
         );
 
@@ -78,7 +81,7 @@ function App() {
 
     fetchMovies();
     return () => controller.abort();
-  }, [searchTerm]);
+  }, [debouncedSearchTerm]);
 
   if (isLoading) {
     return <p>Loading Movies...</p>;
