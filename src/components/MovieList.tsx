@@ -7,7 +7,7 @@ interface IMovieListProps {
 
 export const MovieList = ({ movieList }: IMovieListProps) => {
   if (movieList.length === 0) {
-    return <p>No Movies Found !!</p>;
+    return <p>No movies found. Try a different search.</p>;
   }
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>

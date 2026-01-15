@@ -1,17 +1,17 @@
-import { GENRES } from "../constants/genres";
+import { MOVIE_TYPES } from "../constants/movie";
 
 interface IFilterBarProps {
   searchTerm: string;
   onSearch: (value: string) => void;
-  selectedGenre: string;
-  onGenreSelect: (genre: string) => void;
+  selectedType: string;
+  onTypeSelect: (type: string) => void;
 }
 
 export const FilterBar = ({
   searchTerm,
   onSearch,
-  selectedGenre,
-  onGenreSelect,
+  selectedType,
+  onTypeSelect,
 }: IFilterBarProps) => {
   return (
     <div style={{ paddingBottom: "50px", display: "flex", gap: "25px" }}>
@@ -23,12 +23,12 @@ export const FilterBar = ({
         onChange={(e) => onSearch(e.target.value)}
       />
       <select
-        value={selectedGenre}
-        onChange={(e) => onGenreSelect(e.target.value)}
+        value={selectedType}
+        onChange={(e) => onTypeSelect(e.target.value)}
       >
-        {GENRES.map((genre) => (
-          <option value={genre} key={genre}>
-            {genre}
+        {MOVIE_TYPES.map((type) => (
+          <option value={type.toLowerCase()} key={type}>
+            {type}
           </option>
         ))}
       </select>

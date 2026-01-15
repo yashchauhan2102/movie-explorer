@@ -2,38 +2,73 @@ import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { MovieList } from "./components/MovieList";
 import { FilterBar } from "./components/FilterBar";
-import { movieList } from "./data/movies";
 import { filterMovies } from "./utils/filterMovies";
 import type { IMovie } from "./types/movie";
 import { MOVIE_URL } from "./constants/urls";
+import { mapOmdbMovieToMovie } from "./utils/mapOmdbMovies";
+import type { IOmdbSearchResponse } from "./types/omdb";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedGenre, setSelectedGenre] = useState<string>("All");
+  const [selectedType, setSelectedType] = useState<string>("all");
   const [movies, setMovies] = useState<IMovie[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const filteredMovies = useMemo(
-    () => filterMovies(movieList, searchTerm, selectedGenre),
-    [movieList, searchTerm, selectedGenre]
+    () => filterMovies(movies, searchTerm, selectedType),
+    [movies, searchTerm, selectedType]
   );
 
   useEffect(() => {
+    const trimmed = searchTerm.trim();
+
+    // 🔑 RESET STATE when input is cleared
+    if (trimmed.length === 0) {
+      setMovies([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    // ⛔ Too short → no fetch, but clean UI
+    if (trimmed.length < 3) {
+      setMovies([]);
+      setError(null);
+      return;
+    }
+
+    setError(null);
+
+    const controller = new AbortController();
+
     const fetchMovies = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch(MOVIE_URL);
+        const response = await fetch(
+          MOVIE_URL.replace("${SEARCH_TERM}", searchTerm),
+          { signal: controller.signal }
+        );
 
-        const data = await response.json();
+        const data: IOmdbSearchResponse = await response.json();
 
         if (data.Response === "False") {
+          console.log("Error: ", data.Error);
+          if (
+            data.Error === "Too many results." ||
+            data.Error === "Movie not found!"
+          ) {
+            setMovies([]);
+            setError(null);
+            return;
+          }
+
           throw new Error(data.Error);
         }
 
-        setMovies(data.Search);
+        setMovies(data.Search.map(mapOmdbMovieToMovie));
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -42,7 +77,8 @@ function App() {
     };
 
     fetchMovies();
-  }, []);
+    return () => controller.abort();
+  }, [searchTerm]);
 
   if (isLoading) {
     return <p>Loading Movies...</p>;
@@ -61,8 +97,8 @@ function App() {
       <FilterBar
         searchTerm={searchTerm}
         onSearch={setSearchTerm}
-        selectedGenre={selectedGenre}
-        onGenreSelect={setSelectedGenre}
+        selectedType={selectedType}
+        onTypeSelect={setSelectedType}
       />
       <MovieList movieList={filteredMovies} />
     </div>
