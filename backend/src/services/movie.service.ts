@@ -15,7 +15,6 @@ export async function getAllMovies(): Promise<MovieEntity[]> {
     FROM movies
     ORDER BY created_at DESC
     `);
-  console.log(Array.isArray(rows), rows);
 
   return rows as MovieEntity[];
 }
