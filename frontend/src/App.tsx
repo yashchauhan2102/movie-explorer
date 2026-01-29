@@ -16,7 +16,7 @@ function App() {
 
   const filteredMovies = useMemo(
     () => filterMovies(movies, debouncedSearchTerm, selectedType),
-    [movies, debouncedSearchTerm, selectedType]
+    [movies, debouncedSearchTerm, selectedType],
   );
 
   return (

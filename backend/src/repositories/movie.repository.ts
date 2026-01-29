@@ -27,21 +27,22 @@ export async function searchByMovieTitle(
 }
 
 export async function saveMany(movies: IMovie[]): Promise<void> {
-  for (const movie of movies) {
-    await pool.query(
-      `
-            INSERT INTO movies (title, year, imdb_rating, poster, imdb_id, type)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE imdb_id = imdb_id
-            `,
-      [
-        movie.title,
-        movie.year,
-        parseFloat((Math.random() * 5).toFixed(1)),
-        movie.poster,
-        movie.imdbId,
-        movie.type,
-      ],
-    );
-  }
+  if (movies.length === 0) return;
+
+  const values = movies.map((movie) => [
+    movie.title,
+    movie.year,
+    movie.poster,
+    movie.imdbId,
+    movie.type,
+  ]);
+
+  await pool.query(
+    `
+    INSERT INTO movies (title, year, poster, imdb_id, type)
+    VALUES ?
+    ON DUPLICATE KEY UPDATE imdb_id = imdb_id
+    `,
+    [values],
+  );
 }

@@ -10,24 +10,35 @@ export const getMovies = asyncHandler(async (req, res, next) => {
 });
 
 export const searchMovies = asyncHandler(async (req, res, next) => {
-  const { searchTerm } = req.query as { searchTerm: string };
+  const { search } = req.query as { search: string };
 
-  if (!searchTerm) {
+  if (!search) {
     return res.status(400).json({ message: "search term is required" });
   }
 
-  const dbMovies = await movieRepository.searchByMovieTitle(searchTerm);
+  const dbMovies = await movieRepository.searchByMovieTitle(search);
 
   if (dbMovies.length > 0) {
-    return dbMovies;
+    return res.status(200).json({
+      success: true,
+      data: dbMovies,
+    });
   }
 
-  const omdbMovies = await fetchMoviesFromOmdb(searchTerm);
+  const omdbMovies = await fetchMoviesFromOmdb(search);
 
-  await movieRepository.saveMany(omdbMovies.map(mapOmdbToMovieEntity));
+  const ALLOWED_TYPES = new Set(["movie", "series", "episode"]);
+
+  const filteredOmdbMovies = omdbMovies.filter((movie) =>
+    ALLOWED_TYPES.has(movie.Type),
+  );
+
+  await movieRepository.saveMany(filteredOmdbMovies.map(mapOmdbToMovieEntity));
+
+  const movies = await movieRepository.searchByMovieTitle(search);
 
   res.json({
     success: true,
-    data: movieRepository.searchByMovieTitle(searchTerm),
+    data: movies,
   });
 });
