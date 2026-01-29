@@ -4,5 +4,5 @@ export interface IMovie {
   year: string;
   rating: number;
   type: string;
-  poster: string;
+  poster: string | null;
 }

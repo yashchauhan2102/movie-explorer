@@ -5,16 +5,14 @@ import { mapOmdbMovieToMovie } from "../utils/mapOmdbMovies";
 
 export async function fetchMoviesBySearchTerm(
   searchTerm: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<IMovie[]> {
-  const response = await fetch(
-    MOVIE_URL.replace("${SEARCH_TERM}", searchTerm),
-    {
-      signal: signal,
-    }
-  );
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/movies`, {
+    signal: signal,
+  });
 
-  const data: IOmdbSearchResponse = await response.json();
+  const data = await response.json();
+  console.log(data);
 
   if (data.Response === "False") {
     console.log("Error: ", data.Error);
@@ -28,5 +26,16 @@ export async function fetchMoviesBySearchTerm(
     throw new Error(data.Error);
   }
 
-  return data.Search.map(mapOmdbMovieToMovie);
+  return data.map(mapOmdbMovieToMovie);
+}
+
+export async function fetchMoviesFromBackend(): Promise<IMovie[]> {
+  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/movies`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch movies from backend");
+  }
+
+  const json = await res.json();
+  return json.data;
 }
