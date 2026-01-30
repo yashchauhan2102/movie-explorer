@@ -1,4 +1,5 @@
 import type { IMovie } from "../types/movie";
+import defaultPoster from "../assets/default_poster.png";
 
 interface IMovieCardProps {
   movie: IMovie;
@@ -11,8 +12,8 @@ export const MovieCard = ({ movie }: IMovieCardProps) => {
       <h3>{title}</h3>
       <p>{year}</p>
       <p>{type}</p>
-      <p>{rating}</p>
-      <img src={poster ?? ""} alt="Movie_Poster_Image" />
+      <p>⭐ {rating ?? "N/A"}</p>
+      <img src={poster ?? defaultPoster} alt="Movie_Poster_Image" />
     </div>
   );
 };

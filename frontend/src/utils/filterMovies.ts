@@ -8,7 +8,6 @@ export function filterMovies(
   const normalizedSearch = searchTerm.trim().toLowerCase();
 
   return movies.filter((movie) => {
-    console.log(movie);
     const matchesSearch =
       normalizedSearch.length === 0 ||
       movie.title.toLowerCase().includes(normalizedSearch);
