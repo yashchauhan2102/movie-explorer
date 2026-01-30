@@ -1,18 +1,26 @@
 import { RequestHandler } from "express";
 
-export const validateSearchMovies: RequestHandler = (req, res, next) => {
-  const { searchTerm, type } = req.query;
+export const validateSearchMovie: RequestHandler = (req, res, next) => {
+  const searchTerm = req.query.search;
 
-  if (typeof searchTerm !== "string" || searchTerm.trim().length < 3) {
+  if (!searchTerm) {
+    return res.status(400).json({ message: "search term is required" });
+  }
+
+  if (typeof searchTerm !== "string") {
     return res.status(400).json({
-      message: "search term must be a string with at least 3 characters.",
+      message: "searchTerm must be a string",
     });
   }
 
-  // if (type && type !== "movie" && type !== "series" && type !== "episode") {
-  //   return res.status(400).json({
-  //     message: "type must be movie, series, or episode",
-  //   });
-  // }
+  const trimmed = searchTerm.trim();
+
+  if (trimmed.length < 3) {
+    return res.status(400).json({
+      message: "searchTerm must be at least 3 characters",
+    });
+  }
+
+  req.query.searchTerm = trimmed;
   next();
 };

@@ -7,13 +7,9 @@ export const getMovies = asyncHandler(async (req, res, next) => {
 });
 
 export const searchMovies = asyncHandler(async (req, res, next) => {
-  const { search } = req.query as { search: string };
+  const searchTerm = req.query.search as string;
 
-  if (!search) {
-    return res.status(400).json({ message: "search term is required" });
-  }
-
-  const movies = await searchMoviesByTitle(search);
+  const movies = await searchMoviesByTitle(searchTerm);
 
   res.status(200).json({
     success: true,
