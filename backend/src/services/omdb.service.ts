@@ -10,8 +10,14 @@ export async function fetchMoviesFromOmdb(
     )}`,
   );
 
+  // Explicit HTTP failure
+  if (!response.ok) {
+    throw new Error(`OMDb request failed with status ${response.status}`);
+  }
+
   const data = (await response.json()) as OmdbSearchResponseDTO;
 
+  // OMDb-level "no results" is NOT an error÷
   if (data.Response === "False") {
     return [];
   }

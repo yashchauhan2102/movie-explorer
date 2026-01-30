@@ -1,6 +1,6 @@
 import { pool } from "../config/db";
 import { MovieEntity } from "../entities/movie.entity";
-import { IMovie } from "../type/movie.type";
+import { CreateMovie } from "../type/movie.type";
 
 export async function findAll(): Promise<MovieEntity[]> {
   const [rows] = await pool.query(`
@@ -26,7 +26,7 @@ export async function searchByMovieTitle(
   return rows as MovieEntity[];
 }
 
-export async function saveMany(movies: IMovie[]): Promise<void> {
+export async function saveMany(movies: CreateMovie[]): Promise<void> {
   if (movies.length === 0) return;
 
   const values = movies.map((movie) => [

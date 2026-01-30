@@ -1,6 +1,6 @@
 import { MovieEntity } from "../entities/movie.entity";
 import { mapOmdbToMovieEntity } from "../mapper/mapOmdbToMovie";
-import { ALLOWED_TYPES, IMovie } from "../type/movie.type";
+import { ALLOWED_TYPES, CreateMovie } from "../type/movie.type";
 import * as movieRepository from "../repositories/movie.repository";
 import * as omdbService from "./omdb.service";
 
@@ -19,8 +19,16 @@ export async function searchMoviesByTitle(
     return dbMovies;
   }
 
-  // OMDB fallback
-  const omdbMovies = await omdbService.fetchMoviesFromOmdb(searchTerm);
+  // OMDB fallback guarded
+  let omdbMovies;
+
+  try {
+    omdbMovies = await omdbService.fetchMoviesFromOmdb(searchTerm);
+  } catch (err) {
+    console.error("OMDb fetch failed:", err);
+    // Graceful degradation
+    return [];
+  }
 
   // Filter domain allowed types
   const filteredOmdbMovies = omdbMovies.filter((movie) =>
@@ -28,7 +36,8 @@ export async function searchMoviesByTitle(
   );
 
   // Map OmdbDTO → IMovie
-  const createMovie: IMovie[] = filteredOmdbMovies.map(mapOmdbToMovieEntity);
+  const createMovie: CreateMovie[] =
+    filteredOmdbMovies.map(mapOmdbToMovieEntity);
 
   // Persist
   await movieRepository.saveMany(createMovie);

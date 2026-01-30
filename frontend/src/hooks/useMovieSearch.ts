@@ -36,13 +36,14 @@ export function useMovieSearch(searchTerm: string) {
 
         const result = await fetchMoviesBySearchTerm(
           trimmed,
-          controller.signal
+          controller.signal,
         );
 
         setMovies(result);
       } catch (err) {
+        console.error((err as Error).message);
         if ((err as Error).name !== "AbortError") {
-          setError((err as Error).message);
+          setError("Failed to fetch movies. Please try again.");
         }
       } finally {
         setIsLoading(false);
