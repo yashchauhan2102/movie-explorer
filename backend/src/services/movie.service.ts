@@ -1,28 +1,38 @@
 import { MovieEntity } from "../entities/movie.entity";
+import { mapOmdbToMovieEntity } from "../mapper/mapOmdbToMovie";
+import { ALLOWED_TYPES, IMovie } from "../type/movie.type";
 import * as movieRepository from "../repositories/movie.repository";
+import * as omdbService from "./omdb.service";
 
 export async function getAllMovies(): Promise<MovieEntity[]> {
+  // Return all movies stored in DB
   return movieRepository.findAll();
 }
 
-// export async function saveMoviesFromOmdb(
-//   movies: IOmdbMovie[],
-// ): Promise<MovieEntity[] | void> {
-//   if (movies.length === 0) {
-//     return;
-//   }
+export async function searchMoviesByTitle(
+  searchTerm: string,
+): Promise<MovieEntity[]> {
+  // DB first
+  const dbMovies = await movieRepository.searchByMovieTitle(searchTerm);
 
-//   const values: MovieEntity = movies.map((movie) => {
-//     const year = parseInt(movie.Year, 10);
+  if (dbMovies.length > 0) {
+    return dbMovies;
+  }
 
-//     return [
-//       movie.imdbID,
-//       movie.Title,
-//       Number.isNaN(year) ? 0 : year,
-//       movie.Type,
-//       movie.Poster === "N/A" ? null : movie.Poster,
-//     ];
-//   });
+  // OMDB fallback
+  const omdbMovies = await omdbService.fetchMoviesFromOmdb(searchTerm);
 
-//   return movieRepository.saveMany(values);
-// }
+  // Filter domain allowed types
+  const filteredOmdbMovies = omdbMovies.filter((movie) =>
+    ALLOWED_TYPES.has(movie.Type),
+  );
+
+  // Map OmdbDTO → IMovie
+  const createMovie: IMovie[] = filteredOmdbMovies.map(mapOmdbToMovieEntity);
+
+  // Persist
+  await movieRepository.saveMany(createMovie);
+
+  // Return DB truth
+  return movieRepository.searchByMovieTitle(searchTerm);
+}

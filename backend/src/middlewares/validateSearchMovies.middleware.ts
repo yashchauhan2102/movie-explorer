@@ -9,10 +9,10 @@ export const validateSearchMovies: RequestHandler = (req, res, next) => {
     });
   }
 
-  if (type && type !== "movie" && type !== "series" && type !== "episode") {
-    return res.status(400).json({
-      message: "type must be movie, series, or episode",
-    });
-  }
+  // if (type && type !== "movie" && type !== "series" && type !== "episode") {
+  //   return res.status(400).json({
+  //     message: "type must be movie, series, or episode",
+  //   });
+  // }
   next();
 };

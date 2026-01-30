@@ -1,4 +1,4 @@
-export interface IOmdbMovie {
+export interface OmdbMovieDTO {
   imdbID: string;
   Title: string;
   Year: string;
@@ -6,8 +6,8 @@ export interface IOmdbMovie {
   Type: "movie" | "series" | "episode";
 }
 
-export interface IOmdbSearchResponse {
-  Search?: IOmdbMovie[];
+export interface OmdbSearchResponseDTO {
+  Search?: OmdbMovieDTO[];
   totalResults?: string;
   Response: "True" | "False";
   Error?: string;
