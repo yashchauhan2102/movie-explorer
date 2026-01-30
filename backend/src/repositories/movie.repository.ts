@@ -33,13 +33,14 @@ export async function saveMany(movies: IMovie[]): Promise<void> {
     movie.title,
     movie.year,
     movie.poster,
-    movie.imdbId,
+    movie.imdb_id,
     movie.type,
+    movie.imdb_rating,
   ]);
 
   await pool.query(
     `
-    INSERT INTO movies (title, year, poster, imdb_id, type)
+    INSERT INTO movies (title, year, poster, imdb_id, type, imdb_rating)
     VALUES ?
     ON DUPLICATE KEY UPDATE imdb_id = imdb_id
     `,

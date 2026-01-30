@@ -21,7 +21,7 @@ export async function fetchMoviesBySearchTerm(
   return json.data.map(mapBackendMovieToUi);
 }
 
-export async function fetchAllMoviesFromBackend(): Promise<IMovie[]> {
+export async function fetchAllMovies(): Promise<IMovie[]> {
   const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/movies`);
 
   if (!res.ok) {

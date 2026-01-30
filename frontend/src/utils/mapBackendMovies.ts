@@ -1,12 +1,12 @@
-import type { IMovie } from "../types/movie";
+import type { IMovie, MovieDTO } from "../types/movie";
 
-export function mapBackendMovieToUi(movie: IMovie): IMovie {
+export function mapBackendMovieToUi(movie: MovieDTO): IMovie {
   return {
-    id: movie.id.toString(),
+    id: movie.imdb_id,
     title: movie.title,
     year: movie.year,
     poster: movie.poster,
-    rating: movie.rating,
-    type: "",
+    rating: movie.imdb_rating,
+    type: movie.type,
   };
 }

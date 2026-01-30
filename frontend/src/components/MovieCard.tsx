@@ -12,7 +12,7 @@ export const MovieCard = ({ movie }: IMovieCardProps) => {
       <p>{year}</p>
       <p>{type}</p>
       <p>{rating}</p>
-      <img src={poster} alt="Movie_Poster_Image" />
+      <img src={poster ?? ""} alt="Movie_Poster_Image" />
     </div>
   );
 };

@@ -1,8 +1,8 @@
 export type IMovie = {
   title: string;
   year: number;
-  imdbId: string;
+  imdb_id: string;
   poster: string | null;
-  imdbRating: number;
+  imdb_rating: number;
   type: "movie" | "series" | "episode";
 };

@@ -7,8 +7,8 @@ export function mapOmdbToMovieEntity(omdb: IOmdbMovie): IMovie {
     title: omdb.Title,
     year: Number.isNaN(year) ? 0 : year,
     poster: omdb.Poster !== "N/A" ? omdb.Poster : null,
-    imdbId: omdb.imdbID,
+    imdb_id: omdb.imdbID,
     type: omdb.Type.toLowerCase().trim() as "movie" | "series" | "episode",
-    imdbRating: 0,
+    imdb_rating: parseFloat((Math.random() * 10).toFixed(1)),
   };
 }
