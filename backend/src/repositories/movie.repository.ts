@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import { pool } from "../config/db";
 import { MovieEntity } from "../entities/movie.entity";
 import { CreateMovie } from "../type/movie.type";
@@ -12,18 +13,39 @@ export async function findAll(): Promise<MovieEntity[]> {
   return rows as MovieEntity[];
 }
 
-export async function searchByMovieTitle(
+export async function searchByMovieTitlePaginated(
   searchTerm: string,
-): Promise<MovieEntity[]> {
-  const query = `
+  limit: number,
+  offset: number,
+): Promise<{ movies: MovieEntity[]; total: number }> {
+  const dataQuery = `
     SELECT *
     FROM movies
     where title LIKE ?
-    `;
+    ORDER BY year DESC
+    LIMIT ? OFFSET ?;
+  `;
 
-  const [rows] = await pool.query(query, [`%${searchTerm}%`]);
+  const countQuery = `
+    SELECT COUNT(*) as total
+    FROM movies
+    WHERE title LIKE ?;
+  `;
 
-  return rows as MovieEntity[];
+  const searchTitle = `%${searchTerm}%`;
+
+  const [movies] = await pool.query(dataQuery, [searchTitle, limit, offset]);
+
+  const [countResult] = await pool.query<RowDataPacket[]>(countQuery, [
+    searchTitle,
+  ]);
+
+  const total = countResult[0].total;
+
+  return {
+    movies: movies as MovieEntity[],
+    total: total,
+  };
 }
 
 export async function saveMany(movies: CreateMovie[]): Promise<void> {

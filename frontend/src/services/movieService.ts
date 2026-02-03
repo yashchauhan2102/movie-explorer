@@ -1,12 +1,14 @@
-import type { IMovie } from "../types/movie";
+import type { IMovie, MovieDTO, PaginatedMovieDTO } from "../types/movie";
 import { mapBackendMovieToUi } from "../utils/mapBackendMovies";
 
 export async function fetchMoviesBySearchTerm(
   searchTerm: string,
+  page: number,
+  limit: number,
   signal?: AbortSignal,
-): Promise<IMovie[]> {
+): Promise<PaginatedMovieDTO<IMovie>> {
   const res = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/movies/search?search=${encodeURIComponent(searchTerm)}`,
+    `${import.meta.env.VITE_API_BASE_URL}/movies/search?search=${encodeURIComponent(searchTerm)}&page=${page}&limit=${limit}`,
     {
       signal: signal,
     },
@@ -16,9 +18,13 @@ export async function fetchMoviesBySearchTerm(
     throw new Error("Search failed");
   }
 
-  const json = await res.json();
+  const result: PaginatedMovieDTO<MovieDTO> = await res.json();
+  const data: PaginatedMovieDTO<IMovie> = {
+    ...result,
+    data: result.data.map(mapBackendMovieToUi),
+  };
 
-  return json.data.map(mapBackendMovieToUi);
+  return data;
 }
 
 export async function fetchAllMovies(): Promise<IMovie[]> {

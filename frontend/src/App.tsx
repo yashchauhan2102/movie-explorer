@@ -7,16 +7,22 @@ import { useDebounce } from "./hooks/useDebounce";
 import { useMovieSearch } from "./hooks/useMovieSearch";
 import type { SortBy } from "./types/filters";
 import { sortMovies } from "./utils/sortMovies";
+import { Pagination } from "./components/Pagination";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortBy>("none");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 400);
 
-  const { movies, isLoading, error } = useMovieSearch(debouncedSearchTerm);
+  const { movies, isLoading, error, totalPages } = useMovieSearch(
+    debouncedSearchTerm,
+    page,
+    limit,
+  );
 
   const filteredAndSortedMovies = useMemo(
     () =>
@@ -53,6 +59,14 @@ function App() {
           )}
         </div>
       </div>
+      <Pagination
+        isLoading={isLoading}
+        page={page}
+        setPage={setPage}
+        limit={limit}
+        setLimit={setLimit}
+        totalPages={totalPages}
+      />
     </div>
   );
 }

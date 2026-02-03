@@ -15,3 +15,11 @@ export type MovieDTO = {
   imdb_rating: number;
   type: "movie" | "series" | "episode";
 };
+
+export interface PaginatedMovieDTO<T> {
+  data: T[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
